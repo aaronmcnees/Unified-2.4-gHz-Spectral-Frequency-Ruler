@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unified 2.4 gHz Spectral Frequency Ruler</title>
+<style>
+  :root{
+    --master:#168c28;
+    --wifi:#7b2cbf;
+    --ble:#0f6fd2;
+    --classic:#1f3f99;
+    --cyan:#00aeef;
+    --magenta:#ff00ff;
+    --red:#d71920;
+    --ink:#10233d;
+    --rule:#111827;
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{
+    margin:0;
+    background:#eef2f6;
+    color:var(--ink);
+    font-family:Arial,Helvetica,sans-serif;
+  }
+
+  body{padding:10px}
+
+  .page{
+    width:100%;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid #d6dde6;
+    border-radius:10px;
+    box-shadow:0 6px 22px rgba(18,38,63,.10);
+    padding:10px 10px 14px;
+  }
+
+  h1{
+    margin:2px 0 8px;
+    text-align:center;
+    font-size:clamp(22px,2.3vw,36px);
+    line-height:1.05;
+    color:#163f8e;
+    letter-spacing:.02em;
+  }
+
+  .ruler-scroll{
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .ruler{
+    display:block;
+    width:2200px;
+    min-width:2200px;
+    height:auto;
+  }
+
+  @media (max-width:700px){
+    body{padding:0;background:#fff}
+    .page{
+      border:0;
+      border-radius:0;
+      box-shadow:none;
+      padding:4px;
+    }
+    h1{margin:2px 0 4px}
+  }
+
+  @media print{
+    body{padding:0;background:#fff}
+    .page{box-shadow:none;border:0;width:100%;max-width:none}
+    .ruler-scroll{overflow:visible}
+    .ruler{width:100%;min-width:0}
+    @page{size:landscape;margin:8mm}
+  }
+</style>
+</head>
+
+<body>
+<div class="page">
+  <h1>Unified 2.4 gHz Spectral Frequency Ruler</h1>
+
+  <div class="ruler-scroll">
+    <svg id="chart" class="ruler" viewBox="0 0 2200 1515"
+         role="img" aria-label="Unified 2.4 GHz frequency ruler with master bins, Wi-Fi, Bluetooth Low Energy and Bluetooth Classic">
+
+      <rect width="2200" height="1515" fill="#fff"/>
+
+      <rect x="10" y="20"   width="2180" height="280" rx="10" fill="#fff" stroke="#168c28" stroke-width="2"/>
+      <rect x="10" y="320"  width="2180" height="400" rx="10" fill="#fff" stroke="#7b2cbf" stroke-width="2"/>
+      <rect x="10" y="740"  width="2180" height="290" rx="10" fill="#fff" stroke="#0f6fd2" stroke-width="2"/>
+      <rect x="10" y="1050" width="2180" height="310" rx="10" fill="#fff" stroke="#1f3f99" stroke-width="2"/>
+
+      <!-- Category boxes retained; only the unwanted 1/2/3/4 numbers are absent -->
+      <rect x="10" y="20"   width="210" height="280" rx="10" fill="#168c28"/>
+      <rect x="10" y="320"  width="210" height="400" rx="10" fill="#7b2cbf"/>
+      <rect x="10" y="740"  width="210" height="290" rx="10" fill="#0f6fd2"/>
+      <rect x="10" y="1050" width="210" height="310" rx="10" fill="#1f3f99"/>
+
+      <!-- Bottom legend restored -->
+      <rect x="10" y="1380" width="2180" height="120" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+      <g font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="800" fill="#10233d">
+        <text x="38" y="1425" font-size="20">LEGEND</text>
+
+        <rect x="180" y="1406" width="22" height="22" rx="3" fill="#168c28"/>
+        <text x="212" y="1424">MASTER</text>
+
+        <rect x="390" y="1406" width="22" height="22" rx="3" fill="#7b2cbf"/>
+        <text x="422" y="1424">WI-FI</text>
+
+        <rect x="560" y="1406" width="22" height="22" rx="3" fill="#ff00ff"/>
+        <text x="592" y="1424">WI-FI 1 / 6 / 11</text>
+
+        <rect x="840" y="1406" width="22" height="22" rx="3" fill="#d71920"/>
+        <text x="872" y="1424">WI-FI 14</text>
+
+        <rect x="1040" y="1406" width="22" height="22" rx="3" fill="#0f6fd2"/>
+        <text x="1072" y="1424">BLUETOOTH LE</text>
+
+        <rect x="1335" y="1406" width="22" height="22" rx="3" fill="#00aeef"/>
+        <text x="1367" y="1424">BLE ADVERTISING</text>
+
+        <rect x="1700" y="1406" width="22" height="22" rx="3" fill="#1f3f99"/>
+        <text x="1732" y="1424">BLUETOOTH CLASSIC</text>
+
+        <text x="1100" y="1480" text-anchor="middle" font-size="21">R S T - RESTRICTED SATELLITE TELEMETRY</text>
+      </g>
+
+      <g fill="#fff" font-family="Arial,Helvetica,sans-serif" text-anchor="middle">
+        <text x="115" y="105" font-size="31" font-weight="800">MASTER</text>
+        <text x="115" y="145" font-size="31" font-weight="800">RULER</text>
+        <text x="115" y="202" font-size="19" font-weight="700">2400–2500 MHz</text>
+        <text x="115" y="238" font-size="19" font-weight="700">20 × 5 MHz bins</text>
+
+        <text x="115" y="443" font-size="34" font-weight="800">Wi-Fi</text>
+        <text x="115" y="488" font-size="31" font-weight="800">2.4 GHz</text>
+        <text x="115" y="533" font-size="27" font-weight="800">CHANNELS</text>
+        <text x="115" y="586" font-size="19" font-weight="700">20 MHz</text>
+
+        <text x="115" y="835" font-size="27" font-weight="800">BLUETOOTH</text>
+        <text x="115" y="879" font-size="31" font-weight="800">LE</text>
+        <text x="115" y="930" font-size="19" font-weight="700">40 channels</text>
+
+        <text x="115" y="1142" font-size="26" font-weight="800">BLUETOOTH</text>
+        <text x="115" y="1186" font-size="30" font-weight="800">CLASSIC</text>
+        <text x="115" y="1227" font-size="21" font-weight="800">(BR/EDR)</text>
+        <text x="115" y="1281" font-size="19" font-weight="700">79 × 1 MHz</text>
+      </g>
+
+      <g id="master"></g>
+      <g id="wifi"></g>
+      <g id="ble"></g>
+      <g id="classic"></g>
+    </svg>
+  </div>
+</div>
+
+<script>
+(() => {
+  const NS="http://www.w3.org/2000/svg";
+  const PLOT_L=260;
+  const PLOT_R=2070;
+  const MHz_X=2175;
+  const F0=2400;
+  const F1=2500;
+  const MASTER="#168c28";
+  const WIFI="#7b2cbf";
+  const CYAN="#00aeef";
+  const MAGENTA="#ff00ff";
+  const RED="#d71920";
+  const BLE="#0f6fd2";
+  const CLASSIC="#1f3f99";
+  const INK="#10233d";
+  const RULE="#111827";
+  const X=f => PLOT_L+(f-F0)*(PLOT_R-PLOT_L)/(F1-F0);
+
+  function addLine(g,x1,y1,x2,y2,stroke,width,dash=""){
+    const e=document.createElementNS(NS,"line");
+    e.setAttribute("x1",x1); e.setAttribute("y1",y1);
+    e.setAttribute("x2",x2); e.setAttribute("y2",y2);
+    e.setAttribute("stroke",stroke); e.setAttribute("stroke-width",width);
+    e.setAttribute("vector-effect","non-scaling-stroke");
+    if(dash) e.setAttribute("stroke-dasharray",dash);
+    g.appendChild(e);
+  }
+
+  function addText(g,x,y,s,size,fill=INK,weight=700,anchor="middle",family="Arial,Helvetica,sans-serif"){
+    const e=document.createElementNS(NS,"text");
+    e.setAttribute("x",x); e.setAttribute("y",y);
+    e.setAttribute("text-anchor",anchor);
+    e.setAttribute("font-family",family);
+    e.setAttribute("font-size",size); e.setAttribute("font-weight",weight);
+    e.setAttribute("fill",fill); e.textContent=s;
+    g.appendChild(e);
+  }
+
+  function addPath(g,d,stroke,width,fill="none",fillOpacity=null){
+    const e=document.createElementNS(NS,"path");
+    e.setAttribute("d",d); e.setAttribute("stroke",stroke);
+    e.setAttribute("stroke-width",width); e.setAttribute("fill",fill);
+    if(fillOpacity!==null) e.setAttribute("fill-opacity",fillOpacity);
+    e.setAttribute("vector-effect","non-scaling-stroke");
+    g.appendChild(e);
+  }
+
+  /* A–T sit directly over their matching 5 MHz lines and numbers. */
+  function addAlignedBand(g,letterY,freqY,color){
+    const letters="ABCDEFGHIJKLMNOPQRST";
+    for(let i=0;i<20;i++){
+      const start=2400+i*5;
+      const end=start+5;
+      const xx=X(start+2.5);
+      addText(g,xx,letterY,letters[i],25,color,800);
+      addText(g,xx,freqY,`${start}–${end}`,14,INK,800);
+    }
+    addText(g,MHz_X,freqY,"MHz",21,color,800,"end");
+  }
+
+  /* MASTER RULER */
+  const mg=document.getElementById("master");
+  const MY=190;
+  addAlignedBand(mg,75,112,MASTER);
+  addLine(mg,PLOT_L,MY,PLOT_R,MY,RULE,3);
+
+  for(let f=2400;f<=2500;f++){
+    const xx=X(f);
+    if(f%5===0) addLine(mg,xx,142,xx,210,RULE,2.7);
+    else addLine(mg,xx,166,xx,205,"#315f98",1.3);
+  }
+
+  addText(mg,(PLOT_L+PLOT_R)/2,270,
+          "20 BINS × 5 MHz = 100 MHz (2400–2500 MHz)",19,MASTER,800);
+
+  /* WI-FI 2.4 GHz: standard overlapping 20 MHz channel diagram */
+  const wg=document.getElementById("wifi");
+  const WY=675;
+  addAlignedBand(wg,365,400,WIFI);
+  addLine(wg,PLOT_L,WY,PLOT_R,WY,WIFI,2.2);
+
+  for(let f=2400;f<=2500;f++){
+    const xx=X(f);
+    const major=f%5===0;
+    addLine(wg,xx,WY-(major?18:9),xx,WY+(major?3:2),major?WIFI:"#5f2b7d",major?1.7:1);
+  }
+
+  const wifi=[];
+  for(let ch=1;ch<=13;ch++) wifi.push({ch,fc:2412+5*(ch-1)});
+  wifi.push({ch:14,fc:2484});
+
+  wifi.forEach(({ch,fc})=>{
+    const highlighted=(ch===1 || ch===6 || ch===11);
+    const color=ch===14 ? RED : (highlighted ? MAGENTA : WIFI);
+    const xc=X(fc);
+    const xa=X(fc-(ch===14 ? 5 : 10));
+    const xb=X(fc+(ch===14 ? 5 : 10));
+    const d=ch===14
+      ? [
+          `M ${xa} ${WY}`,
+          `C ${xa+10} 565, ${xc-30} 485, ${xc} 485`,
+          `C ${xc+30} 485, ${xb-10} 565, ${xb} ${WY}`
+        ].join(" ")
+      : [
+          `M ${xa} ${WY}`,
+          `C ${xa+32} 570, ${xc-72} 520, ${xc} 520`,
+          `C ${xc+72} 520, ${xb-32} 570, ${xb} ${WY}`
+        ].join(" ");
+    addPath(wg,d,color,2.5,color,0.10);
+  });
+
+  wifi.forEach(({ch,fc})=>{
+    const highlighted=(ch===1 || ch===6 || ch===11);
+    const color=ch===14 ? RED : (highlighted ? MAGENTA : WIFI);
+    const xc=X(fc);
+    addText(wg,xc,448,String(ch),23,color,800);
+    addText(wg,xc,476,String(fc),17,color,700);
+    addLine(wg,xc,487,xc,ch===14 ? 485 : 520,color,2,"7 6");
+  });
+
+  addText(wg,(PLOT_L+PLOT_R)/2,706,
+          "Wi-Fi channels are ~20 MHz wide. Center frequency shown.",18,WIFI,700);
+
+  /* BLUETOOTH LOW ENERGY */
+  const bg=document.getElementById("ble");
+  const BY=960;
+  addAlignedBand(bg,785,820,BLE);
+  addLine(bg,X(2402),BY,X(2480),BY,BLE,2.3);
+  const bleFreq=ch => ch<=10 ? 2404+2*ch : 2428+2*(ch-11);
+
+  for(let ch=0;ch<=36;ch++){
+    const fc=bleFreq(ch);
+    const xx=X(fc);
+    addLine(bg,xx,BY-25,xx,BY+25,BLE,1.8);
+    addText(bg,xx,918,String(ch),14,INK,700);
+  }
+
+  [[37,2402],[38,2426],[39,2480]].forEach(([ch,fc])=>{
+    const xx=X(fc);
+    addLine(bg,xx,BY-47,xx,BY+47,CYAN,7);
+    addText(bg,xx,858,String(fc)+" MHz",16,CYAN,800);
+    addText(bg,xx,886,String(ch),20,CYAN,800);
+  });
+
+  addText(bg,(X(2404)+X(2478))/2,1013,"Data Channels (0–36)",17,BLE,800);
+  addText(bg,1885,1013,"Advertising Channels (37 / 38 / 39)",17,CYAN,800);
+
+  /* BLUETOOTH CLASSIC */
+  const cg=document.getElementById("classic");
+  const CY=1265;
+  addAlignedBand(cg,1095,1130,CLASSIC);
+  addLine(cg,X(2402),CY,X(2480),CY,CLASSIC,2.3);
+
+  for(let ch=0;ch<=78;ch++){
+    const fc=2402+ch;
+    const xx=X(fc);
+    const major=(ch%10===0 || ch===78);
+    const h=major?62:39;
+    const sw=major?3.1:1.45;
+    addLine(cg,xx,CY-h/2,xx,CY+h/2,CLASSIC,sw);
+
+    if(major){
+      let anchor="middle",tx=xx;
+      if(ch===0){anchor="start";tx+=1;}
+      if(ch===78){anchor="end";tx-=1;}
+      addText(cg,tx,1190,String(ch),19,CLASSIC,800,anchor);
+    }
+  }
+
+  addText(cg,X(2402),1340,"2402 MHz",16,CLASSIC,700,"start");
+  addText(cg,X(2480),1340,"2480 MHz",16,CLASSIC,700,"end");
+})();
+</script>
+</body>
+</html>
