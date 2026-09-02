@@ -4,7 +4,7 @@
 
 A color-coded 2400–2500 MHz reference showing:
 
-- 5 MHz master frequency bins
+- Twenty lettered 5 MHz master frequency bins
 - Wi-Fi 2.4 GHz channel overlap
 - Bluetooth LE data and advertising channels
 - Bluetooth Classic channels
