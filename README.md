@@ -1,5 +1,7 @@
 # Unified 2.4 gHz Spectral Frequency Ruler
 
+![Unified 2.4 gHz Spectral Frequency Ruler](Unified24GHzFrequencyRuler.png)
+
 A color-coded 2400–2500 MHz reference showing:
 
 - 5 MHz master frequency bins
@@ -8,7 +10,7 @@ A color-coded 2400–2500 MHz reference showing:
 - Bluetooth Classic channels
 - Restricted satellite-telemetry ranges
 
-Download `Unified24GHzFrequencyRuler.html` and open it in any web browser.
+[Open or download the interactive HTML ruler](Unified24GHzFrequencyRuler.html).
 
 Permission is granted to use, copy, and share this work for noncommercial educational purposes. All other rights reserved.
 
