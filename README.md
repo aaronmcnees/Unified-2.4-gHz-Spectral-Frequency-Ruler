@@ -10,7 +10,7 @@ A color-coded 2400–2500 MHz reference showing:
 - Bluetooth Classic channels
 - Restricted satellite-telemetry ranges
 
-[Open or download the interactive HTML ruler](Unified24GHzFrequencyRuler.html).
+[Open or download the HTML ruler](Unified24GHzFrequencyRuler.html).
 
 Permission is granted to use, copy, and share this work for noncommercial educational purposes. All other rights reserved.
 
