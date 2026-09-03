@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unified 2.4 gHz Spectral Frequency Ruler</title>
+<style>
+  :root{
+    --master:#168c28;
+    --wifi:#3D1F86;
+    --wifi-highlight:#AD60FC;
+    --ble:#0f6fd2;
+    --classic:#1f3f99;
+    --zigbee:#d97706;
+    --cyan:#2AA9DB;
+    --selected:#DB2A7A;
+    --red:#d71920;
+    --ink:#10233d;
+    --rule:#111827;
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{
+    margin:0;
+    background:#eef2f6;
+    color:var(--ink);
+    font-family:Arial,Helvetica,sans-serif;
+  }
+
+  body{padding:10px}
+
+  .page{
+    width:100%;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid #d6dde6;
+    border-radius:10px;
+    box-shadow:0 6px 22px rgba(18,38,63,.10);
+    padding:10px 10px 14px;
+  }
+
+  h1{
+    margin:2px 0 8px;
+    text-align:center;
+    font-size:clamp(22px,2.3vw,36px);
+    line-height:1.05;
+    color:#163f8e;
+    letter-spacing:.02em;
+  }
+
+  .frequency-match{
+    filter:url(#selectionGlow);
+    stroke-width:4px !important;
+    fill-opacity:.22 !important;
+  }
+
+  .frequency-match-text{
+    filter:url(#selectionGlow);
+    font-weight:900 !important;
+  }
+
+  .frequency-cursor{
+    pointer-events:none;
+    filter:url(#selectionGlow);
+  }
+
+  [data-wifi-channel].frequency-match{
+    stroke-width:3.2px !important;
+    fill-opacity:.18 !important;
+  }
+
+  [data-wifi-channel].wifi-glow-faint{
+    filter:url(#wifiGlowFaint);
+    fill-opacity:.13 !important;
+  }
+
+  [data-wifi-channel].wifi-glow-medium{
+    filter:url(#wifiGlowMedium);
+    fill-opacity:.17 !important;
+  }
+
+  [data-wifi-channel].wifi-glow-strong{
+    filter:url(#wifiGlowStrong);
+    fill-opacity:.22 !important;
+  }
+
+  .wifi-active-curve{
+    pointer-events:none;
+    filter:url(#selectionGlow);
+  }
+
+  [data-zigbee-channel].frequency-match{
+    stroke-width:2.8px !important;
+    fill-opacity:.24 !important;
+  }
+
+  [data-ble-channel].frequency-match,
+  [data-classic-channel].frequency-match,
+  [data-ble-channel].frequency-match-text,
+  [data-classic-channel].frequency-match-text{
+    filter:none !important;
+  }
+
+  .blue-active-band{filter:url(#blueSelectionGlow) !important}
+  .blue-center-line{filter:none !important}
+
+  [data-ble-channel].frequency-match{stroke-width:8px !important}
+  [data-classic-channel].frequency-match{stroke-width:6px !important}
+
+  [data-channel-band].frequency-match{
+    filter:none !important;
+    stroke-width:2px !important;
+    fill-opacity:.46 !important;
+  }
+
+  .frequency-drag-zone{
+    cursor:ew-resize;
+    touch-action:none;
+    pointer-events:all;
+  }
+
+  .ruler-scroll{
+    width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .ruler{
+    display:block;
+    width:2200px;
+    min-width:2200px;
+    height:auto;
+  }
+
+  @media (max-width:700px){
+    body{padding:0;background:#fff}
+    .page{
+      border:0;
+      border-radius:0;
+      box-shadow:none;
+      padding:4px;
+    }
+    h1{margin:2px 0 4px}
+  }
+
+  @media print{
+    body{padding:0;background:#fff}
+    .page{box-shadow:none;border:0;width:100%;max-width:none}
+    .ruler-scroll{overflow:visible}
+    .ruler{width:100%;min-width:0}
+    @page{size:landscape;margin:8mm}
+  }
+</style>
+</head>
+
+<body>
+<div class="page">
+  <h1>Unified 2.4 gHz Spectral Frequency Ruler</h1>
+
+  <div class="ruler-scroll">
+    <svg id="chart" class="ruler" viewBox="0 0 2200 1875"
+         role="img" aria-label="Unified 2.4 GHz frequency ruler with master bins, Wi-Fi, Bluetooth Low Energy, Bluetooth Classic and Zigbee">
+
+      <rect width="2200" height="1875" fill="#fff"/>
+
+      <defs>
+        <filter id="selectionGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="blueSelectionGlow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2.2" result="blueBlur"/>
+          <feFlood flood-color="#2AA9DB" flood-opacity=".82" result="blueColor"/>
+          <feComposite in="blueColor" in2="blueBlur" operator="in" result="blueGlow"/>
+          <feMerge>
+            <feMergeNode in="blueGlow"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="wifiGlowFaint" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur"/>
+          <feFlood flood-color="#DB2A7A" flood-opacity=".34" result="color"/>
+          <feComposite in="color" in2="blur" operator="in" result="glow"/>
+          <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="wifiGlowMedium" x="-55%" y="-55%" width="210%" height="210%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="2.6" result="blur"/>
+          <feFlood flood-color="#DB2A7A" flood-opacity=".62" result="color"/>
+          <feComposite in="color" in2="blur" operator="in" result="glow"/>
+          <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="wifiGlowStrong" x="-70%" y="-70%" width="240%" height="240%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="blur"/>
+          <feFlood flood-color="#DB2A7A" flood-opacity=".92" result="color"/>
+          <feComposite in="color" in2="blur" operator="in" result="glow"/>
+          <feMerge><feMergeNode in="glow"/><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <rect x="10" y="20"   width="2180" height="280" rx="10" fill="#fff" stroke="#168c28" stroke-width="2"/>
+      <rect x="10" y="320"  width="2180" height="400" rx="10" fill="#fff" stroke="#3D1F86" stroke-width="2"/>
+      <rect x="10" y="740"  width="2180" height="290" rx="10" fill="#fff" stroke="#0f6fd2" stroke-width="2"/>
+      <rect x="10" y="1050" width="2180" height="310" rx="10" fill="#fff" stroke="#1f3f99" stroke-width="2"/>
+      <rect x="10" y="1380" width="2180" height="310" rx="10" fill="#fff" stroke="#d97706" stroke-width="2"/>
+
+      <!-- Category boxes retained; only the unwanted 1/2/3/4 numbers are absent -->
+      <rect x="10" y="20"   width="210" height="280" rx="10" fill="#168c28"/>
+      <rect x="10" y="320"  width="210" height="400" rx="10" fill="#3D1F86"/>
+      <rect x="10" y="740"  width="210" height="290" rx="10" fill="#0f6fd2"/>
+      <rect x="10" y="1050" width="210" height="310" rx="10" fill="#1f3f99"/>
+      <rect x="10" y="1380" width="210" height="310" rx="10" fill="#d97706"/>
+
+      <!-- Bottom legend restored -->
+      <rect x="10" y="1710" width="2180" height="150" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+      <g font-family="Arial,Helvetica,sans-serif" font-size="17" font-weight="800" fill="#10233d">
+        <text x="38" y="1755" font-size="20">LEGEND</text>
+
+        <rect x="155" y="1736" width="22" height="22" rx="3" fill="#168c28"/>
+        <text x="187" y="1754">MASTER</text>
+
+        <rect x="330" y="1736" width="22" height="22" rx="3" fill="#3D1F86"/>
+        <text x="362" y="1754">WI-FI</text>
+
+        <rect x="480" y="1736" width="22" height="22" rx="3" fill="#AD60FC"/>
+        <text x="512" y="1754">WI-FI 1 / 6 / 11</text>
+
+        <rect x="700" y="1736" width="22" height="22" rx="3" fill="#d71920"/>
+        <text x="732" y="1754">WI-FI 14</text>
+
+        <rect x="860" y="1736" width="22" height="22" rx="3" fill="#0f6fd2"/>
+        <text x="892" y="1754">BLUETOOTH LE</text>
+
+        <rect x="1080" y="1736" width="22" height="22" rx="3" fill="#2AA9DB"/>
+        <text x="1112" y="1754">BLE ADVERTISING</text>
+
+        <rect x="1330" y="1736" width="22" height="22" rx="3" fill="#1f3f99"/>
+        <text x="1362" y="1754">BLUETOOTH CLASSIC</text>
+
+        <rect x="1660" y="1736" width="22" height="22" rx="3" fill="#d97706"/>
+        <text x="1692" y="1754">ZIGBEE / 802.15.4</text>
+
+      </g>
+
+      <g fill="#fff" font-family="Arial,Helvetica,sans-serif" text-anchor="middle">
+        <text x="115" y="105" font-size="31" font-weight="800">MASTER</text>
+        <text x="115" y="145" font-size="31" font-weight="800">RULER</text>
+        <text x="115" y="202" font-size="22" font-weight="700">2400–2500 MHz</text>
+        <text x="115" y="238" font-size="21" font-weight="700">20 × 5 MHz bins</text>
+
+        <text x="115" y="443" font-size="34" font-weight="800">Wi-Fi</text>
+        <text x="115" y="488" font-size="31" font-weight="800">2.4 GHz</text>
+        <text x="115" y="533" font-size="27" font-weight="800">CHANNELS</text>
+        <text x="115" y="586" font-size="22" font-weight="700">20 MHz</text>
+
+        <text x="115" y="835" font-size="27" font-weight="800">BLUETOOTH</text>
+        <text x="115" y="879" font-size="31" font-weight="800">LE</text>
+        <text x="115" y="930" font-size="19" font-weight="700">40 channels</text>
+
+        <text x="115" y="1142" font-size="26" font-weight="800">BLUETOOTH</text>
+        <text x="115" y="1186" font-size="30" font-weight="800">CLASSIC</text>
+        <text x="115" y="1227" font-size="21" font-weight="800">(BR/EDR)</text>
+        <text x="115" y="1281" font-size="21" font-weight="700">79 × 1 MHz</text>
+
+        <text x="115" y="1476" font-size="30" font-weight="800">ZIGBEE</text>
+        <text x="115" y="1521" font-size="23" font-weight="800">802.15.4</text>
+        <text x="115" y="1572" font-size="19" font-weight="700">Ch 11–26</text>
+        <text x="115" y="1608" font-size="21" font-weight="700">16 × 2 MHz</text>
+      </g>
+
+      <g id="master"></g>
+      <g id="wifi"></g>
+      <g id="ble"></g>
+      <g id="classic"></g>
+      <g id="zigbee"></g>
+      <g id="selection" aria-hidden="true"></g>
+    </svg>
+  </div>
+</div>
+
+<script>
+(() => {
+  const NS="http://www.w3.org/2000/svg";
+  const PLOT_L=260;
+  const PLOT_R=2070;
+  const MHz_X=2175;
+  const F0=2400;
+  const F1=2500;
+  const MASTER="#168c28";
+  const WIFI="#3D1F86";
+  const WIFI_HIGHLIGHT="#AD60FC";
+  const CYAN="#2AA9DB";
+  const SELECTED="#DB2A7A";
+  const RED="#d71920";
+  const BLE="#0f6fd2";
+  const CLASSIC="#1f3f99";
+  const ZIGBEE="#d97706";
+  const INK="#10233d";
+  const RULE="#111827";
+  const X=f => PLOT_L+(f-F0)*(PLOT_R-PLOT_L)/(F1-F0);
+
+  function addLine(g,x1,y1,x2,y2,stroke,width,dash=""){
+    const e=document.createElementNS(NS,"line");
+    e.setAttribute("x1",x1); e.setAttribute("y1",y1);
+    e.setAttribute("x2",x2); e.setAttribute("y2",y2);
+    e.setAttribute("stroke",stroke); e.setAttribute("stroke-width",width);
+    e.setAttribute("vector-effect","non-scaling-stroke");
+    if(dash) e.setAttribute("stroke-dasharray",dash);
+    g.appendChild(e);
+    return e;
+  }
+
+  function addText(g,x,y,s,size,fill=INK,weight=700,anchor="middle",family="Arial,Helvetica,sans-serif"){
+    const e=document.createElementNS(NS,"text");
+    e.setAttribute("x",x); e.setAttribute("y",y);
+    e.setAttribute("text-anchor",anchor);
+    e.setAttribute("font-family",family);
+    e.setAttribute("font-size",size); e.setAttribute("font-weight",weight);
+    e.setAttribute("fill",fill); e.textContent=s;
+    g.appendChild(e);
+    return e;
+  }
+
+  function addRect(g,x,y,w,h,fill,stroke="none",sw=0,rx=0,opacity=null){
+    const e=document.createElementNS(NS,"rect");
+    e.setAttribute("x",x); e.setAttribute("y",y);
+    e.setAttribute("width",w); e.setAttribute("height",h);
+    e.setAttribute("fill",fill);
+    if(stroke!=="none") e.setAttribute("stroke",stroke);
+    if(sw) e.setAttribute("stroke-width",sw);
+    if(rx) e.setAttribute("rx",rx);
+    if(opacity!==null) e.setAttribute("fill-opacity",opacity);
+    e.setAttribute("vector-effect","non-scaling-stroke");
+    g.appendChild(e);
+    return e;
+  }
+
+  function addPath(g,d,stroke,width,fill="none",fillOpacity=null){
+    const e=document.createElementNS(NS,"path");
+    e.setAttribute("d",d); e.setAttribute("stroke",stroke);
+    e.setAttribute("stroke-width",width); e.setAttribute("fill",fill);
+    if(fillOpacity!==null) e.setAttribute("fill-opacity",fillOpacity);
+    e.setAttribute("vector-effect","non-scaling-stroke");
+    g.appendChild(e);
+    return e;
+  }
+
+  /* Single MHz labels only. T is the 2500 MHz endpoint by design. */
+  function addAlignedBand(g,letterY,freqY,color){
+    const letters="ABCDEFGHIJKLMNOPQRST";
+    const frequencies=[
+      2400,2405,2410,2415,2420,2425,2430,2435,2440,2445,
+      2450,2455,2460,2465,2470,2475,2480,2485,2490,2500
+    ];
+    for(let i=0;i<letters.length;i++){
+      const frequency=frequencies[i];
+      const xx=X(frequency);
+      addText(g,xx,letterY,letters[i],25,color,800);
+      addText(g,xx,freqY,String(frequency),20,INK,800);
+    }
+    addText(g,MHz_X,freqY,"MHz",25,color,800,"end");
+  }
+
+  /* MASTER RULER */
+  const mg=document.getElementById("master");
+  const MY=190;
+  addAlignedBand(mg,75,112,MASTER);
+  addLine(mg,PLOT_L,MY,PLOT_R,MY,RULE,3);
+
+  for(let f=2400;f<=2500;f++){
+    const xx=X(f);
+    if(f%5===0) addLine(mg,xx,142,xx,210,RULE,2.7);
+    else addLine(mg,xx,166,xx,205,"#315f98",1.3);
+  }
+
+  addText(mg,(PLOT_L+PLOT_R)/2,270,
+          "20 BINS × 5 MHz = 100 MHz (2400–2500 MHz)",19,MASTER,800);
+
+  /* WI-FI 2.4 GHz: standard overlapping 20 MHz channel diagram */
+  const wg=document.getElementById("wifi");
+  const WY=675;
+  addAlignedBand(wg,365,400,WIFI);
+  addLine(wg,PLOT_L,WY,PLOT_R,WY,WIFI,2.2);
+
+  for(let f=2400;f<=2500;f++){
+    const xx=X(f);
+    const major=f%5===0;
+    addLine(wg,xx,WY-(major?18:9),xx,WY+(major?3:2),major?WIFI:"#5f2b7d",major?1.7:1);
+  }
+
+  const wifi=[];
+  for(let ch=1;ch<=13;ch++) wifi.push({ch,fc:2412+5*(ch-1)});
+  wifi.push({ch:14,fc:2484});
+
+  wifi.forEach(({ch,fc})=>{
+    const highlighted=(ch===1 || ch===6 || ch===11);
+    const color=ch===14 ? RED : (highlighted ? WIFI_HIGHLIGHT : WIFI);
+    const xc=X(fc);
+    const xa=X(ch===14 ? 2473 : fc-10);
+    const xb=X(ch===14 ? 2495 : fc+10);
+    const d=ch===14
+      ? [
+          `M ${xa} ${WY}`,
+          `C ${xa+55} 585, ${xc-95} 520, ${xc} 520`,
+          `C ${xc+95} 520, ${xb-55} 585, ${xb} ${WY}`
+        ].join(" ")
+      : [
+          `M ${xa} ${WY}`,
+          `C ${xa+32} 570, ${xc-72} 520, ${xc} 520`,
+          `C ${xc+72} 520, ${xb-32} 570, ${xb} ${WY}`
+        ].join(" ");
+    const curve=addPath(wg,d,color,2.5,color,0.10);
+    curve.dataset.wifiChannel=String(ch);
+    curve.dataset.min=String(ch===14 ? 2473 : fc-10);
+    curve.dataset.max=String(ch===14 ? 2495 : fc+10);
+  });
+
+  wifi.forEach(({ch,fc})=>{
+    const highlighted=(ch===1 || ch===6 || ch===11);
+    const color=ch===14 ? RED : (highlighted ? WIFI_HIGHLIGHT : WIFI);
+    const xc=X(fc);
+    const channelLabel=addText(wg,xc,448,String(ch),23,"#000000",800);
+    const frequencyLabel=addText(wg,xc,476,String(fc),20,"#000000",700);
+    [channelLabel,frequencyLabel].forEach(e=>{
+      e.dataset.wifiCenterLabel=String(ch);
+      e.dataset.center=String(fc);
+    });
+    const leader=addLine(wg,xc,487,xc,520,color,2,"7 6");
+    [leader].forEach(e=>{
+      e.dataset.wifiLabel=String(ch);
+      e.dataset.min=String(ch===14 ? 2473 : fc-10);
+      e.dataset.max=String(ch===14 ? 2495 : fc+10);
+    });
+  });
+
+  addText(wg,(PLOT_L+PLOT_R)/2,706,
+          "Wi-Fi channels are ~20 MHz wide. Center frequency shown.",18,WIFI,700);
+
+  /* BLUETOOTH LOW ENERGY */
+  const bg=document.getElementById("ble");
+  const BY=960;
+  addAlignedBand(bg,785,820,BLE);
+  addLine(bg,X(2402),BY,X(2480),BY,BLE,2.3);
+  const bleFreq=ch => ch<=10 ? 2404+2*ch : 2428+2*(ch-11);
+
+  for(let ch=0;ch<=36;ch++){
+    const fc=bleFreq(ch);
+    const xx=X(fc);
+    const xa=X(fc-1);
+    const xb=X(fc+1);
+    const band=addRect(bg,xa,BY-34,xb-xa,68,BLE,BLE,0.7,2,0.11);
+    const tick=addLine(bg,xx,BY-25,xx,BY+25,BLE,1.8);
+    const label=addText(bg,xx,918,String(ch),14,INK,700);
+    band.dataset.channelBand="ble";
+    [band,tick,label].forEach(e=>{
+      e.dataset.bleChannel=String(ch);
+      e.dataset.bleKind="data";
+      e.dataset.center=String(fc);
+    });
+  }
+
+  [[37,2402],[38,2426],[39,2480]].forEach(([ch,fc])=>{
+    const xx=X(fc);
+    const xa=X(fc-1);
+    const xb=X(fc+1);
+    const band=addRect(bg,xa,BY-49,xb-xa,98,CYAN,CYAN,0.8,2,0.16);
+    const tick=addLine(bg,xx,BY-47,xx,BY+47,CYAN,7);
+    const frequencyLabel=addText(bg,xx,858,String(fc)+" MHz",19,CYAN,800);
+    const channelLabel=addText(bg,xx,886,String(ch),20,CYAN,800);
+    band.dataset.channelBand="ble-advertising";
+    [band,tick,frequencyLabel,channelLabel].forEach(e=>{
+      e.dataset.bleChannel=String(ch);
+      e.dataset.bleKind="advertising";
+      e.dataset.center=String(fc);
+    });
+  });
+
+  const bleChannelCaption=addText(bg,(PLOT_L+PLOT_R)/2,1013,"",17,BLE,800);
+  const advertisingCaption=document.createElementNS(NS,"tspan");
+  advertisingCaption.setAttribute("fill",CYAN);
+  advertisingCaption.textContent="Advertising Channels (37 / 38 / 39)";
+  bleChannelCaption.appendChild(advertisingCaption);
+  const dataCaption=document.createElementNS(NS,"tspan");
+  dataCaption.setAttribute("fill",BLE);
+  dataCaption.textContent="\u00A0\u00A0\u00A0\u00A0\u00A0Data Channels (0–36)";
+  bleChannelCaption.appendChild(dataCaption);
+
+  /* BLUETOOTH CLASSIC */
+  const cg=document.getElementById("classic");
+  const CY=1265;
+  addAlignedBand(cg,1095,1130,CLASSIC);
+  addLine(cg,X(2402),CY,X(2480),CY,CLASSIC,2.3);
+
+  for(let ch=0;ch<=78;ch++){
+    const fc=2402+ch;
+    const xx=X(fc);
+    const xa=X(fc-0.5);
+    const xb=X(fc+0.5);
+    const major=(ch%10===0 || ch===78);
+    const h=major?62:39;
+    const sw=major?3.1:1.45;
+    const band=addRect(cg,xa,CY-35,xb-xa,70,CLASSIC,CLASSIC,0.55,1,0.10);
+    const tick=addLine(cg,xx,CY-h/2,xx,CY+h/2,CLASSIC,sw);
+    band.dataset.channelBand="classic";
+    band.dataset.classicChannel=String(ch);
+    band.dataset.center=String(fc);
+    tick.dataset.classicChannel=String(ch);
+    tick.dataset.center=String(fc);
+
+    if(major){
+      let anchor="middle",tx=xx;
+      if(ch===0){anchor="start";tx+=1;}
+      if(ch===78){anchor="end";tx-=1;}
+      const label=addText(cg,tx,1190,String(ch),19,CLASSIC,800,anchor);
+      label.dataset.classicChannel=String(ch);
+      label.dataset.center=String(fc);
+    }
+  }
+
+  addText(cg,X(2402),1340,"2402 MHz",19,CLASSIC,700,"start");
+  addText(cg,X(2480),1340,"2480 MHz",19,CLASSIC,700,"end");
+
+  /* ZIGBEE / IEEE 802.15.4 — copied from GOLDEN_WIFI_MASTER_RULER.html */
+  const zg=document.getElementById("zigbee");
+  const ZY=1605;
+  addAlignedBand(zg,1425,1460,ZIGBEE);
+  addLine(zg,X(2404),ZY,X(2481),ZY,ZIGBEE,2.2);
+
+  const zigbeeChannels=[];
+  for(let ch=11;ch<=26;ch++){
+    const fc=2405+5*(ch-11);
+    zigbeeChannels.push({ch,fc});
+    const xa=X(fc-1);
+    const xb=X(fc+1);
+    const xx=X(fc);
+    const band=addRect(zg,xa,1560,Math.max(2,xb-xa),70,ZIGBEE,ZIGBEE,1,4,0.18);
+    const tick=addLine(zg,xx,1552,xx,ZY+25,ZIGBEE,2);
+    const channelLabel=addText(zg,xx,1517,String(ch),17,ZIGBEE,800);
+    const frequencyLabel=addText(zg,xx,1540,String(fc),16,INK,700);
+    [band,tick,channelLabel,frequencyLabel].forEach(e=>{
+      e.dataset.zigbeeChannel=String(ch);
+      e.dataset.center=String(fc);
+    });
+  }
+
+  addText(zg,(PLOT_L+PLOT_R)/2,1672,
+          "Zigbee / IEEE 802.15.4 channels 11–26 · centers 2405–2480 MHz · 5 MHz spacing · ~2 MHz channel width",17,ZIGBEE,800);
+
+  /* INTERACTIVE FREQUENCY SELECTION */
+  const selection=document.getElementById("selection");
+  const chart=document.getElementById("chart");
+
+  const masterBand=addRect(selection,0,48,0,190,MASTER,MASTER,2,8,0.08);
+  masterBand.setAttribute("class","frequency-cursor");
+
+  const wifiActiveCurve=addPath(selection,"",SELECTED,2.8,SELECTED,0.11);
+  wifiActiveCurve.setAttribute("class","frequency-cursor wifi-active-curve");
+  const wifiBand=addRect(selection,0,498,0,192,SELECTED,SELECTED,1,2,0.16);
+  wifiBand.setAttribute("class","frequency-cursor");
+  wifiBand.dataset.cursorLayer="wifi";
+
+  const bleBand=addRect(selection,0,905,0,110,CYAN,CYAN,1.5,3,0.18);
+  bleBand.setAttribute("class","frequency-cursor blue-active-band");
+  bleBand.dataset.cursorLayer="ble";
+  const classicBand=addRect(selection,0,1218,0,94,CLASSIC,CLASSIC,1.5,2,0.18);
+  classicBand.setAttribute("class","frequency-cursor blue-active-band");
+  classicBand.dataset.cursorLayer="classic";
+  const zigbeeBand=addRect(selection,0,1560,0,70,ZIGBEE,ZIGBEE,1.2,3,0.18);
+  zigbeeBand.setAttribute("class","frequency-cursor");
+  zigbeeBand.dataset.cursorLayer="zigbee";
+
+  function makeCursor(y1,y2,color,width,layer){
+    const line=addLine(selection,0,y1,0,y2,color,width);
+    line.setAttribute("class","frequency-cursor");
+    line.setAttribute("stroke-linecap","round");
+    line.dataset.cursorLayer=layer;
+    return line;
+  }
+
+  const masterCursor=makeCursor(50,235,MASTER,2,"master");
+  const wifiCursor=makeCursor(488,690,SELECTED,1.8,"wifi");
+  const bleCursor=makeCursor(895,1018,CYAN,1.8,"ble");
+  const classicCursor=makeCursor(1208,1322,CLASSIC,1.8,"classic");
+  bleCursor.setAttribute("class","frequency-cursor blue-center-line");
+  classicCursor.setAttribute("class","frequency-cursor blue-center-line");
+  const zigbeeCursor=makeCursor(1400,1655,ZIGBEE,1.8,"zigbee");
+
+  const masterDragZone=addRect(selection,PLOT_L,20,PLOT_R-PLOT_L,280,"#000","none",0,0,0);
+  masterDragZone.setAttribute("class","frequency-drag-zone");
+  const wifiDragZone=addRect(selection,PLOT_L,320,PLOT_R-PLOT_L,400,"#000","none",0,0,0);
+  wifiDragZone.setAttribute("class","frequency-drag-zone");
+  const bleDragZone=addRect(selection,PLOT_L,740,PLOT_R-PLOT_L,290,"#000","none",0,0,0);
+  bleDragZone.setAttribute("class","frequency-drag-zone");
+  const classicDragZone=addRect(selection,PLOT_L,1050,PLOT_R-PLOT_L,310,"#000","none",0,0,0);
+  classicDragZone.setAttribute("class","frequency-drag-zone");
+  const zigbeeDragZone=addRect(selection,PLOT_L,1380,PLOT_R-PLOT_L,310,"#000","none",0,0,0);
+  zigbeeDragZone.setAttribute("class","frequency-drag-zone");
+
+  const bleChannels=[];
+  for(let ch=0;ch<=36;ch++) bleChannels.push({ch,fc:bleFreq(ch),kind:"data"});
+  bleChannels.push({ch:37,fc:2402,kind:"advertising"});
+  bleChannels.push({ch:38,fc:2426,kind:"advertising"});
+  bleChannels.push({ch:39,fc:2480,kind:"advertising"});
+
+  function formatMHz(value){
+    return Number.isInteger(value) ? String(value) : value.toFixed(1);
+  }
+
+  function clampFrequency(value){
+    return Math.min(F1,Math.max(F0,Math.round(value*10)/10));
+  }
+
+  function updateFrequency(rawValue){
+    const parsed=Number(rawValue);
+    if(!Number.isFinite(parsed)) return;
+    const frequency=clampFrequency(parsed);
+    const displayFrequency=formatMHz(frequency);
+
+    const binIndex=Math.min(19,Math.max(0,Math.floor((frequency-F0)/5)));
+    const binStart=F0+binIndex*5;
+    const binEnd=binStart+5;
+    const binLetter="ABCDEFGHIJKLMNOPQRST"[binIndex];
+    masterBand.setAttribute("x",String(X(binStart)));
+    masterBand.setAttribute("width",String(X(binEnd)-X(binStart)));
+
+    const cursorX=X(frequency);
+    [masterCursor,wifiCursor,bleCursor,classicCursor,zigbeeCursor].forEach(line=>{
+      line.setAttribute("x1",String(cursorX));
+      line.setAttribute("x2",String(cursorX));
+    });
+    wifiBand.setAttribute("x",String(X(Math.max(F0,frequency-1))));
+    wifiBand.setAttribute("width",String(X(Math.min(F1,frequency+1))-X(Math.max(F0,frequency-1))));
+    wifiActiveCurve.setAttribute("d",[
+      `M ${X(frequency-10)} 675`,
+      `C ${X(frequency-10)+32} 570, ${cursorX-72} 520, ${cursorX} 520`,
+      `C ${cursorX+72} 520, ${X(frequency+10)-32} 570, ${X(frequency+10)} 675`
+    ].join(" "));
+    const nearestBle=bleChannels.reduce((best,channel)=>
+      Math.abs(channel.fc-frequency)<Math.abs(best.fc-frequency) ? channel : best
+    );
+    const bleHasMatch=Math.abs(nearestBle.fc-frequency)<=1;
+    bleBand.setAttribute("display",bleHasMatch ? "inline" : "none");
+    if(bleHasMatch){
+      bleBand.setAttribute("x",String(X(nearestBle.fc-1)));
+      bleBand.setAttribute("width",String(X(nearestBle.fc+1)-X(nearestBle.fc-1)));
+    }
+
+    const nearestClassicChannel=Math.max(0,Math.min(78,Math.round(frequency-2402)));
+    const nearestClassicCenter=2402+nearestClassicChannel;
+    const classicHasMatch=Math.abs(nearestClassicCenter-frequency)<=0.5;
+    classicBand.setAttribute("display",classicHasMatch ? "inline" : "none");
+    if(classicHasMatch){
+      classicBand.setAttribute("x",String(X(nearestClassicCenter-0.5)));
+      classicBand.setAttribute("width",String(X(nearestClassicCenter+0.5)-X(nearestClassicCenter-0.5)));
+    }
+    zigbeeBand.setAttribute("x",String(X(Math.max(F0,frequency-1))));
+    zigbeeBand.setAttribute("width",String(X(Math.min(F1,frequency+1))-X(Math.max(F0,frequency-1))));
+
+    document.querySelectorAll(".frequency-match,.frequency-match-text").forEach(e=>{
+      e.classList.remove("frequency-match","frequency-match-text");
+    });
+    document.querySelectorAll("[data-wifi-channel]").forEach(e=>{
+      e.classList.remove("wifi-glow-faint","wifi-glow-medium","wifi-glow-strong");
+    });
+
+    const wifiMatches=wifi.filter(({ch,fc})=>{
+      const min=ch===14 ? 2473 : fc-10;
+      const max=ch===14 ? 2495 : fc+10;
+      return frequency>=min && frequency<=max;
+    });
+    document.querySelectorAll("[data-wifi-label]").forEach(e=>{
+      if(frequency>=Number(e.dataset.min) && frequency<=Number(e.dataset.max)) e.classList.add("frequency-match-text");
+    });
+    document.querySelectorAll("[data-wifi-center-label]").forEach(e=>{
+      const centered=Math.abs(frequency-Number(e.dataset.center))<0.05;
+      e.setAttribute("fill",centered ? SELECTED : "#000000");
+    });
+
+    const bleMatches=bleChannels.filter(({fc})=>Math.abs(frequency-fc)<=1);
+    document.querySelectorAll("[data-ble-channel]").forEach(e=>{
+      if(Math.abs(frequency-Number(e.dataset.center))<=1){
+        e.classList.add(e.tagName.toLowerCase()==="text" ? "frequency-match-text" : "frequency-match");
+      }
+    });
+
+    const classicMatches=[];
+    for(let ch=0;ch<=78;ch++){
+      const fc=2402+ch;
+      if(Math.abs(frequency-fc)<=0.5) classicMatches.push({ch,fc});
+    }
+    document.querySelectorAll("[data-classic-channel]").forEach(e=>{
+      if(Math.abs(frequency-Number(e.dataset.center))<=0.5){
+        e.classList.add(e.tagName.toLowerCase()==="text" ? "frequency-match-text" : "frequency-match");
+      }
+    });
+
+    const zigbeeMatches=zigbeeChannels.filter(({fc})=>Math.abs(frequency-fc)<=1);
+    document.querySelectorAll("[data-zigbee-channel]").forEach(e=>{
+      if(Math.abs(frequency-Number(e.dataset.center))<=1){
+        e.classList.add(e.tagName.toLowerCase()==="text" ? "frequency-match-text" : "frequency-match");
+      }
+    });
+
+    const wifiText=wifiMatches.length ? `Wi-Fi ${wifiMatches.map(c=>c.ch).join(" / ")}` : "Wi-Fi none";
+    const bleText=bleMatches.length
+      ? bleMatches.map(c=>`BLE ${c.kind} ${c.ch}`).join(" / ")
+      : "BLE none";
+    const classicText=classicMatches.length
+      ? `Classic ${classicMatches.map(c=>c.ch).join(" / ")}`
+      : "Classic none";
+    const zigbeeText=zigbeeMatches.length
+      ? `Zigbee ${zigbeeMatches.map(c=>c.ch).join(" / ")}`
+      : "Zigbee none";
+    const result=`${displayFrequency} MHz → Master ${binLetter} (${binStart}–${binEnd}) · ${wifiText} · ${bleText} · ${classicText} · ${zigbeeText}`;
+    chart.setAttribute("aria-label",result);
+  }
+
+  function frequencyFromPointer(event){
+    const bounds=chart.getBoundingClientRect();
+    const svgX=(event.clientX-bounds.left)*2200/bounds.width;
+    return F0+(svgX-PLOT_L)*(F1-F0)/(PLOT_R-PLOT_L);
+  }
+
+  function snapToWifiCenter(frequency){
+    const nearest=wifi.reduce((best,channel)=>
+      Math.abs(channel.fc-frequency)<Math.abs(best.fc-frequency) ? channel : best
+    );
+    return Math.abs(nearest.fc-frequency)<=1.25 ? nearest.fc : frequency;
+  }
+
+  function bindFrequencyDrag(zone,snapper=null){
+    let dragging=false;
+    const select=event=>{
+      const frequency=frequencyFromPointer(event);
+      updateFrequency(snapper ? snapper(frequency) : frequency);
+    };
+    zone.addEventListener("pointerdown",event=>{
+      dragging=true;
+      zone.setPointerCapture(event.pointerId);
+      select(event);
+      event.preventDefault();
+    });
+    zone.addEventListener("pointermove",event=>{
+      if(dragging) select(event);
+    });
+    const stop=event=>{
+      dragging=false;
+      if(zone.hasPointerCapture(event.pointerId)) zone.releasePointerCapture(event.pointerId);
+    };
+    zone.addEventListener("pointerup",stop);
+    zone.addEventListener("pointercancel",stop);
+  }
+
+  bindFrequencyDrag(masterDragZone);
+  bindFrequencyDrag(wifiDragZone,snapToWifiCenter);
+  bindFrequencyDrag(bleDragZone);
+  bindFrequencyDrag(classicDragZone);
+  bindFrequencyDrag(zigbeeDragZone);
+
+  updateFrequency(2432);
+})();
+</script>
+</body>
+</html>
