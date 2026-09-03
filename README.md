@@ -1,6 +1,6 @@
 # Unified 2.4 gHz Spectral Frequency Ruler
 
-![Unified 2.4 gHz Spectral Frequency Ruler](Unified24GHzFrequencyRuler.png)
+![Unified 2.4 gHz Spectral Frequency Ruler](Unified24GHzFrequencyRuler.jpg)
 
 A color-coded 2400–2500 MHz reference showing:
 
