@@ -1,5 +1,7 @@
 # An Interactive 2.4 GHz Spectral Frequency Ruler
 
+![CoyoteLabs Interactive 2.4 GHz Spectral Frequency Ruler](Interactive24GHzSpectralFrequencyRuler.png)
+
 ## One Spectrum. One Shared Coordinate System.
 
 The central contribution of this project is the **CoyoteLabs A–T Unified Spectral Bin Model**.
