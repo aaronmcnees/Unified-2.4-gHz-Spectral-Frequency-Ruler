@@ -257,13 +257,13 @@
     const highlighted=(ch===1 || ch===6 || ch===11);
     const color=ch===14 ? RED : (highlighted ? MAGENTA : WIFI);
     const xc=X(fc);
-    const xa=X(fc-(ch===14 ? 5 : 10));
-    const xb=X(fc+(ch===14 ? 5 : 10));
+    const xa=X(ch===14 ? 2473 : fc-10);
+    const xb=X(ch===14 ? 2495 : fc+10);
     const d=ch===14
       ? [
           `M ${xa} ${WY}`,
-          `C ${xa+10} 565, ${xc-30} 485, ${xc} 485`,
-          `C ${xc+30} 485, ${xb-10} 565, ${xb} ${WY}`
+          `C ${xa+55} 585, ${xc-95} 520, ${xc} 520`,
+          `C ${xc+95} 520, ${xb-55} 585, ${xb} ${WY}`
         ].join(" ")
       : [
           `M ${xa} ${WY}`,
@@ -279,7 +279,7 @@
     const xc=X(fc);
     addText(wg,xc,448,String(ch),23,color,800);
     addText(wg,xc,476,String(fc),17,color,700);
-    addLine(wg,xc,487,xc,ch===14 ? 485 : 520,color,2,"7 6");
+    addLine(wg,xc,487,xc,520,color,2,"7 6");
   });
 
   addText(wg,(PLOT_L+PLOT_R)/2,706,
