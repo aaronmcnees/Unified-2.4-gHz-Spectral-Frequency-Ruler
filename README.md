@@ -88,6 +88,12 @@ Those visible references help document where the model is being applied.
 
 This ruler shows spectral location and channel relationships. Channel availability and permitted operation vary by jurisdiction.
 
+## Related Project
+
+[HEXCAT](https://github.com/aaronmcnees/HEXCAT) is a simplified local browser interface for HCXTOOLS and Hashcat, built by Aethercat / CoyoteLabs for authorized Wi-Fi password auditing. It converts captures, builds attacks, restores sessions, and displays live progress and recovered passwords.
+
+**THIS IS THE FINAL VERSION OF HEXCAT IV. HEXCAT V IS COMING SOON.**
+
 ## Permission
 
 Permission is granted to use, copy, and share this work for noncommercial educational purposes. All other rights reserved.
